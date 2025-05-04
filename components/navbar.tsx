@@ -1,4 +1,7 @@
 "use client";
+import { usePathname } from "next/navigation";
+import clsx from "clsx"; // Optional utility for conditional classes
+
 
 import { useEffect, useState } from "react";
 import { getContract } from "@/utils/contract";
@@ -9,6 +12,7 @@ import { ethers } from "ethers";
 import useUserRoles from "@/hooks/useUserRoles";
 
 export default function Navbar() {
+  const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
   const {
     account,
@@ -29,23 +33,48 @@ export default function Navbar() {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
-            <Link href="/" className="text-white hover:text-foreground">
+            <Link href="/" className={clsx(
+            "px-4 py-2 rounded hover:bg-gray-200 transition-colors",
+            pathname === "/"
+              ? "bg-gray-300 font-semibold" // active/toggled
+              : "text-gray-600"
+          )}>
               Home
             </Link>
-            <Link href="/verify" className="text-white hover:text-foreground">
+            <Link href="/verify" className={clsx(
+            "px-4 py-2 rounded hover:bg-gray-200 transition-colors",
+            pathname === "/verify"
+              ? "bg-gray-300 font-semibold" // active/toggled
+              : "text-gray-600"
+          )}>
               Verify
             </Link>
-            {isUploader && <Link href="/upload" className="text-white hover:text-foreground">
+            <Link href="/about" className={clsx(
+            "px-4 py-2 rounded hover:bg-gray-200 transition-colors",
+            pathname === "/about"
+              ? "bg-gray-300 font-semibold" // active/toggled
+              : "text-gray-600"
+          )}>
+              About
+            </Link>
+            {isUploader && <Link href="/upload" className={clsx(
+            "px-4 py-2 rounded hover:bg-gray-200 transition-colors",
+            pathname === "/upload"
+              ? "bg-gray-300 font-semibold" // active/toggled
+              : "text-gray-600"
+          )}>
               Upload
             </Link>}
             {isOwner && (
-              <Link href="/uploader-manager" className="text-white hover:text-foreground">
+              <Link href="/uploader-manager" className={clsx(
+            "px-4 py-2 rounded hover:bg-gray-200 transition-colors",
+            pathname === "/uploader-manager"
+              ? "bg-gray-300 font-semibold" // active/toggled
+              : "text-gray-600"
+          )}>
                 Uploader Manager
               </Link>
             )}
-            <Link href="/about" className="text-white hover:text-foreground">
-              About
-            </Link>
             <Button onClick={connectWallet}>
               {walletConnected ? `${account.slice(0, 6)}...${account.slice(-4)}` : "Connect Wallet"}
             </Button>
@@ -61,21 +90,46 @@ export default function Navbar() {
         {isOpen && (
           <div className="md:hidden py-4">
             <div className="flex flex-col space-y-4">
-              <Link href="/" className="text-white hover:text-foreground" onClick={() => setIsOpen(false)}>
+              <Link href="/" className={clsx(
+            "px-4 py-2 rounded hover:bg-gray-200 transition-colors",
+            pathname === "/"
+              ? "bg-gray-300 font-semibold" // active/toggled
+              : "text-gray-600"
+          )} onClick={() => setIsOpen(false)}>
                 Home
               </Link>
-              <Link href="/verify" className="text-white hover:text-foreground" onClick={() => setIsOpen(false)}>
+              <Link href="/verify" className={clsx(
+            "px-4 py-2 rounded hover:bg-gray-200 transition-colors",
+            pathname === "/verify"
+              ? "bg-gray-300 font-semibold" // active/toggled
+              : "text-gray-600"
+          )} onClick={() => setIsOpen(false)}>
                 Verify
               </Link>
-              <Link href="/upload" className="text-white hover:text-foreground" onClick={() => setIsOpen(false)}>
+              <Link href="/upload" className={clsx(
+            "px-4 py-2 rounded hover:bg-gray-200 transition-colors",
+            pathname === "/upload"
+              ? "bg-gray-300 font-semibold" // active/toggled
+              : "text-gray-600"
+          )} onClick={() => setIsOpen(false)}>
                 Upload
               </Link>
               {isOwner && (
-                <Link href="/uploader-manager" className="text-white hover:text-foreground" onClick={() => setIsOpen(false)}>
+                <Link href="/uploader-manager" className={clsx(
+            "px-4 py-2 rounded hover:bg-gray-200 transition-colors",
+            pathname === "/uploader-manager"
+              ? "bg-gray-300 font-semibold" // active/toggled
+              : "text-gray-600"
+          )} onClick={() => setIsOpen(false)}>
                   Uploader Manager
                 </Link>
               )}
-              <Link href="/about" className="text-white hover:text-foreground" onClick={() => setIsOpen(false)}>
+              <Link href="/about" className={clsx(
+            "px-4 py-2 rounded hover:bg-gray-200 transition-colors",
+            pathname === "/about"
+              ? "bg-gray-300 font-semibold" // active/toggled
+              : "text-gray-600"
+          )} onClick={() => setIsOpen(false)}>
                 About
               </Link>
               <Button onClick={connectWallet} className="w-full">
