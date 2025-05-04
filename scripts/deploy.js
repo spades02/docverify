@@ -1,17 +1,17 @@
 const hre = require("hardhat");
 
 async function main() {
-    // Get the ContractFactory and deploy the contract
-    const DocumentVerifier = await hre.ethers.getContractFactory("DocumentVerifier");
-    const documentVerifier = await DocumentVerifier.deploy();
+  const [deployer] = await hre.ethers.getSigners();
+  console.log("Deploying contract with:", deployer.address);
 
-    console.log("DocumentVerifier deployed to:", documentVerifier.address);
+  const DocVerify = await hre.ethers.getContractFactory("DocumentVerifier");
+  const contract = await DocVerify.deploy(deployer.address); // Pass constructor arg here
+  await contract.deployed();
+
+  console.log("DocVerify deployed to:", contract.address);
 }
 
-// Handle errors and execute the deployment script
-main()
-    .then(() => process.exit(0))
-    .catch((error) => {
-        console.error(error);
-        process.exit(1);
-    });
+main().catch((error) => {
+  console.error(error);
+  process.exitCode = 1;
+});

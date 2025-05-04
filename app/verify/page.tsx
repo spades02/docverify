@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { ethers } from "ethers";
 import contractABI from "@/artifacts/contracts/DocumentVerifier.sol/DocumentVerifier.json"; // Put ABI file here
 
-const CONTRACT_ADDRESS = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
+const CONTRACT_ADDRESS = "0xc6e7DF5E7b4f2A278906862b61205850344D4e7d";
 
 export default function VerifyPage() {
 
@@ -32,8 +32,10 @@ const generateFileHash = async (file: File) => {
   const buffer = await file.arrayBuffer();
   const hashBuffer = await crypto.subtle.digest("SHA-256", buffer);
   const hashArray = Array.from(new Uint8Array(hashBuffer));
-  return hashArray.map(byte => byte.toString(16).padStart(2, "0")).join("");
+  const hexHash = hashArray.map(b => b.toString(16).padStart(2, "0")).join("");
+  return ethers.utils.hexlify("0x" + hexHash); // returns '0x...' format
 };
+
 
 const handleVerify = async () => {
   if (!file) return;
@@ -44,15 +46,13 @@ const handleVerify = async () => {
     const signer = provider.getSigner();
     const contract = new ethers.Contract(CONTRACT_ADDRESS, contractABI.abi, signer);
 
-    const tx = await contract.verifyDocument(hash);
-    const receipt = await tx.wait();
+    const isValid = await contract.verifyDocument(hash); // Direct call returns result
+if (isValid) {
+  setVerificationStatus("✅ Document verified successfully!");
+} else {
+  setVerificationStatus("❌ Document not found.");
+}
 
-    const event = receipt.events?.find((e: ethers.Event) => e.event === "DocumentVerified");
-    if (event && event.args && event.args.isValid) {
-      setVerificationStatus("✅ Document verified successfully!");
-    } else {
-      setVerificationStatus("❌ Document not found.");
-    }
   } catch (error) {
     console.error("Verification error:", error);
     setVerificationStatus("⚠️ Error verifying document.");

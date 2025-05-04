@@ -1,25 +1,22 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { getContract } from "@/utils/contract";
 import Link from "next/link";
 import { FileCheck, Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ethers } from "ethers";
+import useUserRoles from "@/hooks/useUserRoles";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
-  const [walletConnected, setWalletConnected] = useState(false);
-  const [address, setAddress] = useState("");
-  const [account, setAccount] = useState("");
-
-  const connectWallet = async () => {
-    if (!window.ethereum) throw new Error("MetaMask not found");
-  
-     const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
-    setAccount(accounts[0]);
-    setWalletConnected(true);
-  };
-  
+  const {
+    account,
+    walletConnected,
+    isOwner,
+    isUploader,
+    connectWallet,
+  } = useUserRoles();
 
   return (
     <nav className="bg-blue-500 backdrop-blur supports-[backdrop-filter]:bg-blue-500 sticky top-0 z-50">
@@ -38,22 +35,24 @@ export default function Navbar() {
             <Link href="/verify" className="text-white hover:text-foreground">
               Verify
             </Link>
-            <Link href="/upload" className="text-white hover:text-foreground">
+            {isUploader && <Link href="/upload" className="text-white hover:text-foreground">
               Upload
-            </Link>
+            </Link>}
+            {isOwner && (
+              <Link href="/uploader-manager" className="text-white hover:text-foreground">
+                Uploader Manager
+              </Link>
+            )}
             <Link href="/about" className="text-white hover:text-foreground">
               About
             </Link>
             <Button onClick={connectWallet}>
-              {walletConnected ? `${account.slice(0, 6)}...${account.slice(38,42)}` : "Connect Wallet"}
-              </Button>
+              {walletConnected ? `${account.slice(0, 6)}...${account.slice(-4)}` : "Connect Wallet"}
+            </Button>
           </div>
 
           {/* Mobile Navigation Button */}
-          <button
-            className="md:hidden"
-            onClick={() => setIsOpen(!isOpen)}
-          >
+          <button className="md:hidden" onClick={() => setIsOpen(!isOpen)}>
             {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
         </div>
@@ -62,36 +61,25 @@ export default function Navbar() {
         {isOpen && (
           <div className="md:hidden py-4">
             <div className="flex flex-col space-y-4">
-              <Link
-                href="/"
-                className="text-white hover:text-foreground"
-                onClick={() => setIsOpen(false)}
-              >
+              <Link href="/" className="text-white hover:text-foreground" onClick={() => setIsOpen(false)}>
                 Home
               </Link>
-              <Link
-                href="/verify"
-                  className="text-white hover:text-foreground"
-                onClick={() => setIsOpen(false)}
-              >
+              <Link href="/verify" className="text-white hover:text-foreground" onClick={() => setIsOpen(false)}>
                 Verify
               </Link>
-              <Link
-                href="/upload"
-                className="text-white hover:text-foreground"
-                onClick={() => setIsOpen(false)}
-              >
+              <Link href="/upload" className="text-white hover:text-foreground" onClick={() => setIsOpen(false)}>
                 Upload
               </Link>
-              <Link
-                href="/about"
-                className="text-white hover:text-foreground"
-                onClick={() => setIsOpen(false)}
-              >
+              {isOwner && (
+                <Link href="/uploader-manager" className="text-white hover:text-foreground" onClick={() => setIsOpen(false)}>
+                  Uploader Manager
+                </Link>
+              )}
+              <Link href="/about" className="text-white hover:text-foreground" onClick={() => setIsOpen(false)}>
                 About
               </Link>
               <Button onClick={connectWallet} className="w-full">
-                {walletConnected ? `${account.slice(0, 6)}...${account.slice(account.length - 4, account.length)}` : "Connect Wallet"}
+                {walletConnected ? `${account.slice(0, 6)}...${account.slice(-4)}` : "Connect Wallet"}
               </Button>
             </div>
           </div>

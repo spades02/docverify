@@ -10,7 +10,7 @@ import { Card } from "../../components/ui/card";
 import { Input } from "../../components/ui/input";
 import { Label } from "../../components/ui/label";
 
-const contractAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3"; // Replace with your contract address
+const contractAddress = "0xc6e7DF5E7b4f2A278906862b61205850344D4e7d"; // Replace with your contract address
 
 export default function UploadPage() {
   const [file, setFile] = useState<File | null>(null);
@@ -22,8 +22,9 @@ export default function UploadPage() {
     const buffer = await file.arrayBuffer();
     const hashBuffer = await crypto.subtle.digest("SHA-256", buffer);
     const hashArray = Array.from(new Uint8Array(hashBuffer));
-    return hashArray.map(byte => byte.toString(16).padStart(2, "0")).join("");
-};
+    const hexHash = hashArray.map(b => b.toString(16).padStart(2, "0")).join("");
+    return ethers.utils.hexlify("0x" + hexHash); // returns '0x...' format
+  };
 
 const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
   if (e.target.files && e.target.files.length > 0) {

@@ -1,7 +1,7 @@
 import { ethers } from "ethers";
 import contractABI from "../artifacts/contracts/DocumentVerifier.sol/DocumentVerifier.json";
 
-const contractAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
+const contractAddress = "0xc6e7DF5E7b4f2A278906862b61205850344D4e7d";
 
 export function getContract() {
     console.log(contractABI);

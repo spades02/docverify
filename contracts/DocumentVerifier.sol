@@ -1,75 +1,68 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.20;
 
-contract DocumentVerifier {
+import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/access/AccessControl.sol";
+
+contract DocumentVerifier is Ownable, AccessControl {
+    bytes32 public constant UPLOADER_ROLE = keccak256("UPLOADER_ROLE");
+
     struct Document {
-        string fileHash; // Hash of the document file
-        address owner; // Address of the uploader
-        uint256 timestamp; // Time of upload
+        address uploader;
+        uint256 timestamp;
     }
 
-    mapping(string => Document) private documents;
-    mapping(address => bool) public isUploader;
+    mapping(bytes32 => Document) private documents;
 
-    modifier onlyUploader() {
-        require(isUploader[msg.sender], "Not authorized");
-        _;
-    }
-    modifier onlyOwner() {
-        require(msg.sender == address(this), "Not the contract owner");
-        _;
-    }
-
-    event DocumentUploaded(
-        string fileHash,
-        address indexed owner,
-        uint256 timestamp
-    );
+    event DocumentUploaded(bytes32 indexed fileHash, address indexed uploader);
+    event UploaderAdded(address indexed account);
+    event UploaderRemoved(address indexed account);
     event DocumentVerified(
-        string fileHash,
+        bytes32 indexed fileHash,
         bool isValid,
         address indexed verifier
     );
 
-    /**
-     * @dev Uploads a document's hash to the blockchain.
-     * @param fileHash The hash of the document.
-     */
-    function uploadDocument(string memory fileHash) public {
-        require(bytes(fileHash).length > 0, "Invalid file hash");
-        require(documents[fileHash].timestamp == 0, "Document already exists");
-
-        documents[fileHash] = Document(fileHash, msg.sender, block.timestamp);
-        emit DocumentUploaded(fileHash, msg.sender, block.timestamp);
+    constructor(address initialOwner) Ownable(initialOwner) {
+        _grantRole(DEFAULT_ADMIN_ROLE, initialOwner);
+        _grantRole(UPLOADER_ROLE, initialOwner);
     }
 
-    function addUploader(address _uploader) public onlyOwner {
-        isUploader[_uploader] = true;
+    modifier onlyUploader() {
+        require(hasRole(UPLOADER_ROLE, msg.sender), "Not authorized to upload");
+        _;
     }
 
-    /**
-     * @dev Verifies if a document exists on the blockchain.
-     * @param fileHash The hash of the document to verify.
-     * @return isValid True if the document exists, false otherwise.
-     */
+    function addUploader(address account) external onlyOwner {
+        _grantRole(UPLOADER_ROLE, account);
+        emit UploaderAdded(account);
+    }
+
+    function revokeUploader(address account) external onlyOwner {
+        _revokeRole(UPLOADER_ROLE, account);
+        emit UploaderRemoved(account);
+    }
+
+    function uploadDocument(bytes32 fileHash) external onlyUploader {
+        require(
+            documents[fileHash].uploader == address(0),
+            "Document already exists"
+        );
+        documents[fileHash] = Document(msg.sender, block.timestamp);
+        emit DocumentUploaded(fileHash, msg.sender);
+    }
+
     function verifyDocument(
-        string memory fileHash
-    ) public returns (bool isValid) {
-        isValid = documents[fileHash].timestamp != 0;
-        emit DocumentVerified(fileHash, isValid, msg.sender);
+        bytes32 fileHash
+    ) external view returns (bool isValid) {
+        return documents[fileHash].timestamp != 0;
     }
 
-    /**
-     * @dev Retrieves document details.
-     * @param fileHash The hash of the document.
-     * @return owner The address of the owner.
-     * @return timestamp The upload timestamp.
-     */
-    function getDocumentDetails(
-        string memory fileHash
-    ) public view returns (address owner, uint256 timestamp) {
-        require(documents[fileHash].timestamp != 0, "Document not found");
-        Document memory doc = documents[fileHash];
-        return (doc.owner, doc.timestamp);
+    function getUploader(bytes32 fileHash) external view returns (address) {
+        return documents[fileHash].uploader;
+    }
+
+    function getTimestamp(bytes32 fileHash) external view returns (uint256) {
+        return documents[fileHash].timestamp;
     }
 }
