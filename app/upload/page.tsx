@@ -9,8 +9,9 @@ import { Button } from "../../components/ui/button";
 import { Card } from "../../components/ui/card";
 import { Input } from "../../components/ui/input";
 import { Label } from "../../components/ui/label";
+import ContractAddress from "../../app/config.json"; // Import your contract address from a separate file
 
-const contractAddress = "0xc6e7DF5E7b4f2A278906862b61205850344D4e7d"; // Replace with your contract address
+const contractAddress = ContractAddress[31337].documentVerifier.address; // Replace with your contract address
 
 export default function UploadPage() {
   const [file, setFile] = useState<File | null>(null);

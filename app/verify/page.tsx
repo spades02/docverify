@@ -7,9 +7,9 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { ethers } from "ethers";
 import contractABI from "@/artifacts/contracts/DocumentVerifier.sol/DocumentVerifier.json"; // Put ABI file here
+import contractAddress from "@/app/config.json"; // Import your contract address from a separate file
 
-const CONTRACT_ADDRESS = "0xc6e7DF5E7b4f2A278906862b61205850344D4e7d";
-
+const CONTRACT_ADDRESS = contractAddress[31337].documentVerifier.address; // Replace with your contract address
 export default function VerifyPage() {
 
 const [file, setFile] = useState<File | null>(null);

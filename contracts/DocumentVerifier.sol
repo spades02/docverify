@@ -13,6 +13,8 @@ contract DocumentVerifier is Ownable, AccessControl {
     }
 
     mapping(bytes32 => Document) private documents;
+    address[] public uploaderList;
+    mapping(address => bool) public isUploaderActive;
 
     event DocumentUploaded(bytes32 indexed fileHash, address indexed uploader);
     event UploaderAdded(address indexed account);
@@ -31,16 +33,6 @@ contract DocumentVerifier is Ownable, AccessControl {
     modifier onlyUploader() {
         require(hasRole(UPLOADER_ROLE, msg.sender), "Not authorized to upload");
         _;
-    }
-
-    function addUploader(address account) external onlyOwner {
-        _grantRole(UPLOADER_ROLE, account);
-        emit UploaderAdded(account);
-    }
-
-    function revokeUploader(address account) external onlyOwner {
-        _revokeRole(UPLOADER_ROLE, account);
-        emit UploaderRemoved(account);
     }
 
     function uploadDocument(bytes32 fileHash) external onlyUploader {
@@ -64,5 +56,24 @@ contract DocumentVerifier is Ownable, AccessControl {
 
     function getTimestamp(bytes32 fileHash) external view returns (uint256) {
         return documents[fileHash].timestamp;
+    }
+
+    function addUploader(address account) external onlyOwner {
+        _grantRole(UPLOADER_ROLE, account);
+        if (!isUploaderActive[account]) {
+            uploaderList.push(account);
+            isUploaderActive[account] = true;
+        }
+        emit UploaderAdded(account);
+    }
+
+    function revokeUploader(address account) external onlyOwner {
+        _revokeRole(UPLOADER_ROLE, account);
+        isUploaderActive[account] = false;
+        emit UploaderRemoved(account);
+    }
+
+    function getAllUploaders() external view returns (address[] memory) {
+        return uploaderList;
     }
 }
