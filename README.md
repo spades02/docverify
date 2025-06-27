@@ -39,14 +39,14 @@ cd docverify
 ```bash
 npm install
 ```
-3. Start Local Hardhat Node
+### 3. Start Local Hardhat Node
 
 ```bash
 npx hardhat node
 ```
 This runs a local Ethereum network with test accounts.
 
-4. Deploy Smart Contract
+### 4. Deploy Smart Contract
 
 ```bash
 
@@ -58,7 +58,7 @@ Deploy the DocumentVerifier contract
 
 Store the contract address in config.json for frontend usage
 
-5. Run the Frontend
+### 5. Run the Frontend
 
 ```bash
 npm run dev
