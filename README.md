@@ -44,7 +44,7 @@ npm install
 ```bash
 npx hardhat node
 ```
-This runs a local Ethereum network with test accounts.
+- This runs a local Ethereum network with test accounts.
 
 ### 4. Deploy Smart Contract
 
@@ -54,30 +54,37 @@ npx hardhat run scripts/deploy.js --network localhost
 ```
 This will:
 
-Deploy the DocumentVerifier contract
+- Deploy the DocumentVerifier contract
 
-Store the contract address in config.json for frontend usage
+- Store the contract address in config.json for frontend usage
 
 ### 5. Run the Frontend
 
 ```bash
 npm run dev
 ```
-Visit the app at: http://localhost:3000
+- Visit the app at: http://localhost:3000
 
-🧪 Test Accounts
+---
+
+### 🧪 Test Accounts
+
 Use the default accounts provided by Hardhat when running the local node. They include:
 
-Owner/deployer address
+- Owner/deployer address
 
-Multiple test addresses with UPLOADER_ROLE granted or revoked
+- Multiple test addresses with UPLOADER_ROLE granted or revoked
 
-Each account has 10,000 ETH for testing
+- Each account has 10,000 ETH for testing
 
-📢 Want to Contribute?
-Pull requests are welcome!
-For major changes, please open an issue first to discuss what you'd like to improve.
+---
 
-📬 Contact
+### 📢 Want to Contribute?
+
+- Pull requests are welcome!
+- For major changes, please open an issue first to discuss what you'd like to improve.
+
+### 📬 Contact
+
 If you liked the project or want to collaborate, feel free to reach out or connect with me on [LinkedIn](https://www.linkedin.com/in/abdullah-develops).
 
